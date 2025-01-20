@@ -80,7 +80,10 @@ try:
     # Navigate to the website
     driver.get(link)
     driver.maximize_window()
-
+    time.sleep(10)
+    while not safe_find(By.XPATH, login_button).is_displayed():
+        driver.refresh()
+        time.sleep(10)
     # Login
     safe_click(By.XPATH, login_button)
     safe_find(By.ID, email_field).send_keys(email)
