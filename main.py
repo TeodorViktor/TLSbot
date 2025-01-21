@@ -23,7 +23,7 @@ CHROME_OPTIONS.add_experimental_option("detach", True)
 CHROME_OPTIONS.add_argument("--incognito")
 CHROME_OPTIONS.add_argument("--disable-gpu")
 CHROME_OPTIONS.add_argument("--no-sandbox")
-#CHROME_OPTIONS.add_argument("--headless")
+CHROME_OPTIONS.add_argument("--headless")
 CHROME_OPTIONS.add_argument("--disable-dev-shm-usage")  # Recommended for Render
 driver = webdriver.Chrome(options=CHROME_OPTIONS)
 wait = WebDriverWait(driver, 30)
