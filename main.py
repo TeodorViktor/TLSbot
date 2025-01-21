@@ -81,9 +81,18 @@ def run_script():
         driver.get(link)
         driver.maximize_window()
         time.sleep(10)
-        while not safe_find(By.XPATH, login_button).is_displayed():
-            driver.refresh()
-            time.sleep(10)
+        while True:
+            try:
+                login_buttons = safe_find(By.XPATH, login_button)
+                if not login_buttons.is_displayed():
+                    driver.refresh()
+                    time.sleep(10)
+                else:
+                    break
+            except Exception as e:
+                print(f"Page didn't load correctly: {e}")
+                send_telegram_notification("Page didn't load correctly.")
+                break
         # Login
         safe_click(By.XPATH, login_button)
         safe_find(By.ID, email_field).send_keys(email)
