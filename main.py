@@ -11,11 +11,16 @@ import variables
 import requests
 from dotenv import load_dotenv
 
+
+# Load environment variables
 load_dotenv()
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID")
 email = os.getenv("email")
 password = os.getenv("password")
+
+if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, email, password]):
+    raise EnvironmentError("Missing one or more required environment variables.")
 
 # Selenium WebDriver Settings
 CHROME_OPTIONS = webdriver.ChromeOptions()
@@ -26,9 +31,9 @@ CHROME_OPTIONS.add_argument("--no-sandbox")
 CHROME_OPTIONS.add_argument("--headless")
 CHROME_OPTIONS.add_argument("--disable-dev-shm-usage")  # Recommended for Render
 CHROME_OPTIONS.add_argument("--user-data-dir=/tmp/chrome_user_data")  # Unique data dir
-driver = webdriver.Chrome(options=CHROME_OPTIONS)
-wait = WebDriverWait(driver, 40)
 
+driver = webdriver.Chrome(options=CHROME_OPTIONS)
+wait = WebDriverWait(driver, 60)  # Increased timeout for Render's slower responses
 
 # Helper Functions
 def send_telegram_notification(message):
@@ -47,9 +52,9 @@ def safe_find(by, value):
     try:
         return wait.until(EC.presence_of_element_located((by, value)))
     except Exception as e:
-        driver.save_screenshot("error_screenshot.png")  # Save screenshot
+        driver.save_screenshot("error_screenshot.png")  # Save screenshot for debugging
         print(driver.page_source)  # Log page source
-        raise
+        raise RuntimeError(f"Error locating element by {by}: {value}") from e
 
 
 def safe_click(by, value):
@@ -59,44 +64,39 @@ def safe_click(by, value):
         element.click()
     except Exception as e:
         print(f"Error clicking element: {e}")
-        raise
+        raise RuntimeError(f"Error clicking element by {by}: {value}") from e
 
 
-def login_if_page_loggedout():
-    """Log in if the page is logged out."""
+def login():
+    """Log in to the application."""
     try:
-        email_input = safe_find(By.ID, email_field)
-        email_input.send_keys(email)
+        safe_find(By.ID, email_field).send_keys(email)
         password_input = safe_find(By.ID, password_field)
         password_input.send_keys(password)
         password_input.send_keys(Keys.ENTER)
-        time.sleep(10)
+        time.sleep(10)  # Allow time for the login to process
     except Exception as e:
-        print(f"Error during login: {e}")
+        raise RuntimeError("Error during login process.") from e
 
 
-# Main Script
 def run_script():
     try:
         # Navigate to the website
         driver.get(link)
-        driver.maximize_window()
         time.sleep(10)
+
+        # Wait for login button and proceed
         login_buttons = safe_find(By.XPATH, login_button)
-        while True:
-            if not login_buttons.is_displayed():
-                #driver.refresh()
-                send_telegram_notification("Page didn't load correctly. Waiting 20 Sec")
-                time.sleep(20)
-            else:
-                send_telegram_notification("Page loaded correctly. No waiting needed. Continuing... ")
-                break
-        # Login
+        while not login_buttons.is_displayed():
+            send_telegram_notification("Page didn't load correctly. Waiting 20 Sec")
+            time.sleep(20)
+            driver.refresh()
+
+        send_telegram_notification("Page loaded correctly. No waiting needed. Continuing... ")
+
+        # Perform login
         safe_click(By.XPATH, login_button)
-        safe_find(By.ID, email_field).send_keys(email)
-        password_field = safe_find(By.ID, variables.password_field)
-        password_field.send_keys(password)
-        password_field.send_keys(Keys.ENTER)
+        login()
 
         # Navigate to Application Page
         if safe_find(By.XPATH, enter_application_button).is_displayed():
@@ -118,7 +118,7 @@ def run_script():
                     no_slots_element.click()
                     driver.refresh()
                     time.sleep(600)
-                    login_if_page_loggedout()
+                    login()  # Re-login if necessary
                 else:
                     print("Slots available!")
                     send_telegram_notification("🎉 Free slots are available! Go book them now!")
@@ -128,7 +128,7 @@ def run_script():
                 send_telegram_notification("An error occurred while checking slots.")
                 break
     finally:
-        # driver.quit()
+        driver.quit()
         print("Script execution completed.")
 
 
