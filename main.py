@@ -23,10 +23,11 @@ CHROME_OPTIONS.add_experimental_option("detach", True)
 CHROME_OPTIONS.add_argument("--incognito")
 CHROME_OPTIONS.add_argument("--disable-gpu")
 CHROME_OPTIONS.add_argument("--no-sandbox")
-CHROME_OPTIONS.add_argument("--headless")
+#CHROME_OPTIONS.add_argument("--headless")
 CHROME_OPTIONS.add_argument("--disable-dev-shm-usage")  # Recommended for Render
+CHROME_OPTIONS.add_argument("--user-data-dir=/tmp/chrome_user_data")  # Unique data dir
 driver = webdriver.Chrome(options=CHROME_OPTIONS)
-wait = WebDriverWait(driver, 30)
+wait = WebDriverWait(driver, 40)
 
 
 # Helper Functions
@@ -43,11 +44,11 @@ def send_telegram_notification(message):
 
 
 def safe_find(by, value):
-    """Wait for an element and return it."""
     try:
         return wait.until(EC.presence_of_element_located((by, value)))
     except Exception as e:
-        print(f"Error locating element: {e}")
+        driver.save_screenshot("error_screenshot.png")  # Save screenshot
+        print(driver.page_source)  # Log page source
         raise
 
 
@@ -81,17 +82,14 @@ def run_script():
         driver.get(link)
         driver.maximize_window()
         time.sleep(10)
+        login_buttons = safe_find(By.XPATH, login_button)
         while True:
-            try:
-                login_buttons = safe_find(By.XPATH, login_button)
-                if not login_buttons.is_displayed():
-                    driver.refresh()
-                    time.sleep(10)
-                else:
-                    break
-            except Exception as e:
-                print(f"Page didn't load correctly: {e}")
-                send_telegram_notification("Page didn't load correctly.")
+            if not login_buttons.is_displayed():
+                #driver.refresh()
+                send_telegram_notification("Page didn't load correctly. Waiting 20 Sec")
+                time.sleep(20)
+            else:
+                send_telegram_notification("Page loaded correctly. No waiting needed. Continuing... ")
                 break
         # Login
         safe_click(By.XPATH, login_button)
@@ -137,7 +135,7 @@ def run_script():
 if __name__ == "__main__":
     try:
         while True:  # Infinite loop to keep the script running
-            run_script()  # Call the main logic of your script
+            run_script()  # Call the main logic of script
             time.sleep(60)  # Wait for 60 seconds before the next iteration
     except KeyboardInterrupt:
-        print("Script stopped manually.")  # Graceful exit if stopped
+        print("Script stopped manually.")
