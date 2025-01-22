@@ -100,7 +100,7 @@ def run_script():
         # Wait for login button and proceed
         login_buttons = safe_find(By.XPATH, login_button)
         while not login_buttons.is_displayed():
-            send_telegram_notification("Page didn't load correctly. Waiting 20 Sec")
+            send_telegram_notification("Page didn't load correctly. Waiting 40 Sec")
             time.sleep(40)
             #driver.refresh()
 
