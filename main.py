@@ -23,7 +23,7 @@ CHROME_OPTIONS.add_experimental_option("detach", True)
 CHROME_OPTIONS.add_argument("--incognito")
 CHROME_OPTIONS.add_argument("--disable-gpu")
 CHROME_OPTIONS.add_argument("--no-sandbox")
-#CHROME_OPTIONS.add_argument("--headless")
+CHROME_OPTIONS.add_argument("--headless")
 CHROME_OPTIONS.add_argument("--disable-dev-shm-usage")  # Recommended for Render
 CHROME_OPTIONS.add_argument("--user-data-dir=/tmp/chrome_user_data")  # Unique data dir
 driver = webdriver.Chrome(options=CHROME_OPTIONS)
