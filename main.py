@@ -7,10 +7,18 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from variables import *
-import variables
 import requests
 from dotenv import load_dotenv
+from simpleserver import *
+import cloudscraper
 
+scraper = cloudscraper.create_scraper()
+response = scraper.get("https://visas-de.tlscontact.com")
+print(response.text)
+
+# Start the server in a separate thread
+server_thread = threading.Thread(target=start_server, daemon=True)
+server_thread.start()
 
 # Load environment variables
 load_dotenv()
@@ -31,9 +39,13 @@ CHROME_OPTIONS.add_argument("--no-sandbox")
 CHROME_OPTIONS.add_argument("--headless")
 CHROME_OPTIONS.add_argument("--disable-dev-shm-usage")  # Recommended for Render
 CHROME_OPTIONS.add_argument("--user-data-dir=/tmp/chrome_user_data")  # Unique data dir
+CHROME_OPTIONS.add_argument(
+    "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
+CHROME_OPTIONS.add_argument('--proxy-server=http://<proxy>:<port>')
 
 driver = webdriver.Chrome(options=CHROME_OPTIONS)
 wait = WebDriverWait(driver, 60)  # Increased timeout for Render's slower responses
+
 
 # Helper Functions
 def send_telegram_notification(message):
