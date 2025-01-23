@@ -40,11 +40,11 @@ CHROME_OPTIONS.add_argument("--headless")
 CHROME_OPTIONS.add_argument("--remote-debugging-port=9222")
 CHROME_OPTIONS.add_argument("--disable-setuid-sandbox")
 CHROME_OPTIONS.add_argument("--disable-dev-shm-usage")  # Recommended for Render
-#CHROME_OPTIONS.add_argument("--user-data-dir=/tmp/chrome_user_data")  # Unique data dir
-#CHROME_OPTIONS.add_argument(
+# CHROME_OPTIONS.add_argument("--user-data-dir=/tmp/chrome_user_data")  # Unique data dir
+# CHROME_OPTIONS.add_argument(
 #    "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36")
-#CHROME_OPTIONS.add_argument("--disable-blink-features=AutomationControlled")
-#CHROME_OPTIONS.add_experimental_option("excludeSwitches", ["enable-automation"])
+# CHROME_OPTIONS.add_argument("--disable-blink-features=AutomationControlled")
+# CHROME_OPTIONS.add_experimental_option("excludeSwitches", ["enable-automation"])
 
 
 driver = webdriver.Chrome(options=CHROME_OPTIONS)
@@ -106,7 +106,7 @@ def run_script():
         while not login_buttons.is_displayed():
             send_telegram_notification("Page didn't load correctly. Waiting 40 Sec")
             time.sleep(40)
-            #driver.refresh()
+            # driver.refresh()
 
         send_telegram_notification("Page loaded correctly. No waiting needed. Continuing... ")
 
