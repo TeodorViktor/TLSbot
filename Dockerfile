@@ -18,13 +18,13 @@ RUN apt-get update && apt-get install -y \
     libgbm-dev \
     libgconf-2-4 \
     xdg-utils && \
-    wget -qO- https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb > google-chrome.deb && \
+    wget -qO- https://dl.google.com/linux/chrome/deb/stable/google-chrome-stable_114.0.5735.90-1_amd64.deb > google-chrome.deb && \
     apt install -y ./google-chrome.deb && \
     rm google-chrome.deb && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Chromedriver (match a known compatible version with Chrome)
+# Install Chromedriver (hardcoded version compatible with Chrome 114)
 RUN CHROMEDRIVER_VERSION=114.0.5735.90 && \
     wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O /tmp/chromedriver.zip && \
     unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
