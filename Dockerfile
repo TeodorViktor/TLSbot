@@ -4,7 +4,7 @@ FROM python:3.12-slim
 # Set environment variables to prevent interactive prompts
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install required system dependencies and Chrome
+# Install required system dependencies and Google Chrome
 RUN apt-get update && apt-get install -y \
     wget \
     unzip \
@@ -24,8 +24,9 @@ RUN apt-get update && apt-get install -y \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install Chromedriver
-RUN wget -q "https://chromedriver.storage.googleapis.com/$(wget -qO- https://chromedriver.storage.googleapis.com/LATEST_RELEASE)" -O /tmp/chromedriver.zip && \
+# Install Chromedriver (match a known compatible version with Chrome)
+RUN CHROMEDRIVER_VERSION=114.0.5735.90 && \
+    wget -q "https://chromedriver.storage.googleapis.com/${CHROMEDRIVER_VERSION}/chromedriver_linux64.zip" -O /tmp/chromedriver.zip && \
     unzip /tmp/chromedriver.zip -d /usr/local/bin/ && \
     chmod +x /usr/local/bin/chromedriver && \
     rm -rf /tmp/*
