@@ -1,5 +1,5 @@
 link = "https://visas-de.tlscontact.com/visa/eg/egHAC2de/home"
-login_button = '/html/body/div[2]/div[2]/div/div[2]/div[6]/div[1]/a'
+login_button = "/html/body/div[2]/div[2]/div/div[2]/div[6]/div[1]/a"
 email_field = "username"
 password_field = "password"
 form_login_button = "login"
