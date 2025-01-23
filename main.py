@@ -33,7 +33,7 @@ if not all([TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID, email, password]):
 # Selenium WebDriver Settings
 CHROME_OPTIONS = webdriver.ChromeOptions()
 CHROME_OPTIONS.add_experimental_option("detach", True)
-#CHROME_OPTIONS.add_argument("--incognito")
+CHROME_OPTIONS.add_argument("--incognito")
 CHROME_OPTIONS.add_argument("--disable-gpu")
 CHROME_OPTIONS.add_argument("--no-sandbox")
 CHROME_OPTIONS.add_argument("--headless")
